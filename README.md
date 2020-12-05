@@ -3,7 +3,7 @@
 
 # BGP Report
 
-Projeto em desenvolvimento de uma ferramenta para visualização e análise de roteadores BGP. A solução desenvolvida faz parte do meu trabalho de conclusão do curso de Ciência da Computação, orientado pelos professores [Ricardo Schmidt](https://www.escavador.com/sobre/2791800/ricardo-de-oliveira-schmidt) e [Marco Antônio Trentin](https://www.escavador.com/sobre/602313/marco-antonio-sandini-trentin).
+Projeto em desenvolvimento de uma ferramenta para análise e visualização de roteadores BGP. A solução desenvolvida faz parte do meu trabalho de conclusão do curso de Ciência da Computação, orientado pelos professores [Ricardo Schmidt](https://www.escavador.com/sobre/2791800/ricardo-de-oliveira-schmidt) e [Marco Antônio Trentin](https://www.escavador.com/sobre/602313/marco-antonio-sandini-trentin).
 
 ## Licença
 
