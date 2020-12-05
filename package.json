@@ -1,0 +1,12 @@
+{
+  "name": "bgp-report",
+  "version": "1.0.0",
+  "author": "Daniel Cunha <danielcunha54@gmail.com>",
+  "description": "Ferramenta de análise e visualização de roteadores BGP",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  }
+}
