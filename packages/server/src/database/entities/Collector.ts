@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose'
 
 import Router, { IRouter } from './Router'
 
-export interface IRRC extends Document {
+export interface ICollector extends Document {
   _id: number
   name: string
   location: {
@@ -14,7 +14,7 @@ export interface IRRC extends Document {
   routers: IRouter[]
 }
 
-const RRCSchema = new Schema({
+const CollectorSchema = new Schema({
   _id: Number,
   name: {
     type: String,
@@ -42,4 +42,4 @@ const RRCSchema = new Schema({
   routers: [Router]
 })
 
-export default mongoose.model<IRRC>('RRC', RRCSchema)
+export default mongoose.model<ICollector>('Collector', CollectorSchema)

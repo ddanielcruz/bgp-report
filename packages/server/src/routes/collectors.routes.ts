@@ -1,9 +1,9 @@
 import { Router } from 'express'
 
-import RRCsController from '../controllers/RRCsController'
+import CollectorsController from '../controllers/CollectorsController'
 
 const routes = Router()
-const controller = new RRCsController()
+const controller = new CollectorsController()
 
 routes.get('/', controller.index)
 routes.get('/:id', controller.show)

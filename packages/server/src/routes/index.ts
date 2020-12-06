@@ -1,8 +1,8 @@
 import { Router } from 'express'
 
-import rrcsRoutes from './rrcs.routes'
+import collectorsRoutes from './collectors.routes'
 
 const routes = Router()
-routes.use('/rrcs', rrcsRoutes)
+routes.use('/collectors', collectorsRoutes)
 
 export default routes
