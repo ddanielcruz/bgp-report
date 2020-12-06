@@ -2,12 +2,14 @@ import { Request, Response } from 'express'
 
 import Collector from '@entities/Collector'
 
+import * as views from '../views/collectors.views'
+
 export default class CollectorsController {
   async index(_request: Request, response: Response): Promise<Response> {
     const collectors = await Collector.find({}, { routers: 0 })
 
     response.header('x-total-count', collectors.length.toString())
-    return response.json(collectors)
+    return response.json(views.renderMany(collectors))
   }
 
   async show(request: Request, response: Response): Promise<Response> {
@@ -18,6 +20,6 @@ export default class CollectorsController {
       return response.status(404).json({ error: 'Collector not found.' })
     }
 
-    return response.json(collector)
+    return response.json(views.render(collector))
   }
 }
