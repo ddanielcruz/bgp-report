@@ -4,6 +4,7 @@ import express from 'express'
 import helmet from 'helmet'
 import 'express-async-errors'
 
+import errorHandler from './middleware/errorHandler'
 import logger from './middleware/logger'
 import routes from './routes'
 
@@ -13,5 +14,6 @@ app.use(cors())
 app.use(logger())
 app.use(express.json())
 app.use('/api', routes)
+app.use(errorHandler)
 
 export default app
