@@ -4,7 +4,7 @@ import Collector from '@entities/Collector'
 
 export default class CollectorsController {
   async index(_request: Request, response: Response): Promise<Response> {
-    const collectors = await Collector.find()
+    const collectors = await Collector.find({}, { routers: 0 })
 
     response.header('x-total-count', collectors.length.toString())
     return response.json(collectors)
