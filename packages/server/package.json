@@ -8,6 +8,7 @@
     "lint": "eslint 'src/**' --fix"
   },
   "dependencies": {
+    "axios": "^0.21.0",
     "celebrate": "^13.0.4",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",

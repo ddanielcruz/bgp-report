@@ -2,15 +2,17 @@ import mongoose, { Schema, Document } from 'mongoose'
 
 import Router, { IRouter } from './Router'
 
+export interface ILocation {
+  topological: string
+  geographical: string
+  latitude: number
+  longitude: number
+}
+
 export interface ICollector extends Document {
   _id: number
   name: string
-  location: {
-    topological: string
-    geographical: string
-    latitude: number
-    longitude: number
-  }
+  location: ILocation
   routers: IRouter[]
 }
 

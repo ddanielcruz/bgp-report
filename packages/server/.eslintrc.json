@@ -2,6 +2,7 @@
   "extends": ["@bgp-report/eslint-config"],
   "rules": {
     "no-useless-constructor": "off",
-    "import/no-duplicates": "off"
+    "import/no-duplicates": "off",
+    "camelcase": "off"
   }
 }

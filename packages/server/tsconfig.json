@@ -5,6 +5,7 @@
     "experimentalDecorators": true,
     "baseUrl": "src",
     "paths": {
+      "@config/*": ["config/*"],
       "@entities/*": ["database/entities/*"]
     }
   },
