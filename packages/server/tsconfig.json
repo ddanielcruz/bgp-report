@@ -6,7 +6,8 @@
     "baseUrl": "src",
     "paths": {
       "@config/*": ["config/*"],
-      "@entities/*": ["database/entities/*"]
+      "@entities/*": ["database/entities/*"],
+      "@services/*": ["services/*"]
     }
   },
   "include": ["src/**/*"]
