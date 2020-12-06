@@ -4,7 +4,9 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "baseUrl": "src",
-    "paths": {}
+    "paths": {
+      "@entities/*": ["database/entities/*"]
+    }
   },
   "include": ["src/**/*"]
 }
