@@ -17,6 +17,7 @@ interface RRC {
 interface Location {
   latitude: number
   longitude: number
+  country_code: string
 }
 
 export default class ManageCollectorsService {
@@ -94,6 +95,7 @@ export default class ManageCollectorsService {
     return {
       geographical: rrc.geographical_location,
       topological: rrc.topological_location,
+      countryCode: foundLocation.country_code,
       latitude: foundLocation.latitude,
       longitude: foundLocation.longitude
     }

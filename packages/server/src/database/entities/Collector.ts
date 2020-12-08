@@ -5,6 +5,7 @@ import Router, { IRouter } from './Router'
 export interface ILocation {
   topological: string
   geographical: string
+  countryCode: string
   latitude: number
   longitude: number
 }
@@ -29,6 +30,10 @@ const CollectorSchema = new Schema({
       required: true
     },
     geographical: {
+      type: String,
+      required: true
+    },
+    countryCode: {
       type: String,
       required: true
     },
