@@ -20,6 +20,7 @@ interface Resource {
   routes: {
     source: string
     collector: number
+    peer: number
     path: number[]
   }[]
 }
@@ -50,6 +51,7 @@ export default class FindResourceInformationService {
         return {
           source: source,
           collector: parseInt(collector),
+          peer: route.path[0],
           path: route.path
         }
       })
