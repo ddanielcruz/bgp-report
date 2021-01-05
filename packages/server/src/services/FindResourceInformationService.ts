@@ -1,10 +1,12 @@
 import axios from 'axios'
 
+import * as views from '../views/resources.views'
+
 interface Params {
   resource: string
 }
 
-interface BGPState {
+export interface BGPState {
   resource: string
   nr_routes: number
   bgp_state: {
@@ -15,23 +17,28 @@ interface BGPState {
   }[]
 }
 
-interface Resource {
+export interface Route {
+  source: string
+  collector: number
+  peer: number
+  path: number[]
+}
+
+export interface Resource {
   resource: string
-  routes: {
-    source: string
-    collector: number
-    peer: number
-    path: number[]
-  }[]
+  routes: Route[]
+  prepends: Route[]
+  timestamp: number
 }
 
 export default class FindResourceInformationService {
   async execute(params: Params): Promise<Resource> {
     // 1.0 Find resource state using RIS API
+    const timestamp = new Date()
     const bgpState = await this.findResourceState(params)
 
     // 2.0 Parse BGP state into information
-    return this.parseBGPStateInformation(bgpState)
+    return views.render(bgpState, timestamp)
   }
 
   private async findResourceState(params: Params): Promise<BGPState> {
@@ -41,20 +48,5 @@ export default class FindResourceInformationService {
     )
 
     return response.data.data
-  }
-
-  private parseBGPStateInformation(bgpState: BGPState): Resource {
-    return {
-      resource: bgpState.resource,
-      routes: bgpState.bgp_state.map(route => {
-        const [collector, source] = route.source_id.split('-')
-        return {
-          source: source,
-          collector: parseInt(collector),
-          peer: route.path[0],
-          path: route.path
-        }
-      })
-    }
   }
 }
