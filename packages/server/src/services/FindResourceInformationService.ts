@@ -4,6 +4,8 @@ import * as views from '../views/resources.views'
 
 interface Params {
   resource: string
+  collectors?: string
+  timestamp?: string
 }
 
 export interface BGPState {
@@ -44,7 +46,13 @@ export default class FindResourceInformationService {
   private async findResourceState(params: Params): Promise<BGPState> {
     const { resource } = params
     const response = await axios.get<{ data: BGPState }>(
-      `https://stat.ripe.net/data//bgp-state/data.json?resource=${resource}`
+      `https://stat.ripe.net/data//bgp-state/data.json?resource=${resource}`,
+      {
+        params: {
+          rrcs: params.collectors ?? undefined,
+          timestamp: params.timestamp ?? undefined
+        }
+      }
     )
 
     return response.data.data
