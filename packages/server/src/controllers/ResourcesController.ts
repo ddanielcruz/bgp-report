@@ -6,11 +6,11 @@ export default class ResourcesController {
   async show(request: Request, response: Response): Promise<Response> {
     const { params, query } = request
     const service = new FindResourceInformationService()
-    const resource = await service.execute({
-      resource: params.resource,
+    const resources = await service.execute({
+      resources: params.resources,
       ...query
     })
 
-    return response.json(resource)
+    return response.json(resources)
   }
 }
