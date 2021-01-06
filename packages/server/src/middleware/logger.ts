@@ -2,9 +2,11 @@ import { Request, Response, NextFunction } from 'express'
 import morgan from 'morgan'
 
 export default () => {
-  if (process.env.NODE_ENV === 'test') {
+  const { NODE_ENV, MORGAN_MODE } = process.env
+
+  if (NODE_ENV === 'test' || MORGAN_MODE === 'none') {
     return (_req: Request, _res: Response, next: NextFunction) => next()
   }
 
-  return morgan(process.env.MORGAN_MODE || 'dev')
+  return morgan(MORGAN_MODE || 'dev')
 }
