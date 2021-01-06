@@ -8,8 +8,9 @@ import {
 export const render = (bgpState: BGPState, timestamp: Date): Resource => {
   const routes: Route[] = []
   const prepends: Route[] = []
+  const { resource, bgp_state } = bgpState
 
-  bgpState.bgp_state.forEach(rawRoute => {
+  bgp_state.forEach(rawRoute => {
     const [collector, source] = rawRoute.source_id.split('-')
     const route = {
       source: source,
@@ -25,7 +26,7 @@ export const render = (bgpState: BGPState, timestamp: Date): Resource => {
   })
 
   return {
-    resource: bgpState.resource,
+    resources: typeof resource === 'string' ? [resource] : resource,
     routes,
     prepends,
     timestamp: timestamp.getTime()

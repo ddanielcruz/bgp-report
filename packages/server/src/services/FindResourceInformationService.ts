@@ -9,7 +9,7 @@ interface Params {
 }
 
 export interface BGPState {
-  resource: string
+  resource: string | string[]
   nr_routes: number
   bgp_state: {
     target_prefix: string
@@ -27,7 +27,7 @@ export interface Route {
 }
 
 export interface Resource {
-  resource: string
+  resources: string[]
   routes: Route[]
   prepends: Route[]
   timestamp: number
