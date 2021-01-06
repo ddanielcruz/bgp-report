@@ -6,5 +6,5 @@ export default () => {
     return (_req: Request, _res: Response, next: NextFunction) => next()
   }
 
-  return morgan(process.env.MORGAN || 'dev')
+  return morgan(process.env.MORGAN_MODE || 'dev')
 }
