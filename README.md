@@ -1,5 +1,7 @@
-[![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/)
-[![Open Source](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://opensource.org/)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/danielccunha/bgp-report?color=%233a86ff)
+[![MIT License](https://img.shields.io/badge/License-MIT-blue.svg?color=%233a86ff)](https://opensource.org/licenses/)
+![GitHub last commit](https://img.shields.io/github/last-commit/danielccunha/bgp-report?color=3a86ff)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/1e22be0695da4a608eb7f3846f6b9709)](https://www.codacy.com/gh/danielccunha/bgp-report/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=danielccunha/bgp-report&amp;utm_campaign=Badge_Grade)
 
 # BGP Report
 
