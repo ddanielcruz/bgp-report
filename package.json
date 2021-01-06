@@ -9,6 +9,9 @@
       "packages/*"
     ]
   },
+  "engines": {
+    "node": "14.x"
+  },
   "scripts": {
     "lint": "yarn lint:server",
     "lint:server": "yarn workspace @bgp-report/server lint"
