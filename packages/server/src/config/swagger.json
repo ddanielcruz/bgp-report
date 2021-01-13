@@ -1,0 +1,218 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "BGP Report",
+    "description": "REST API used for analyzing and visualizing BGP routers, developed using [RIPEstat Data API](https://stat.ripe.net/docs/data_api).",
+    "contact": {
+      "name": "Daniel Cunha",
+      "url": "https://www.linkedin.com/in/daniel-cunha-53053816b/",
+      "email": "danielcunha54@gmail.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://github.com/danielccunha/bgp-report/blob/master/LICENSE"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://bgp-report.herokuapp.com/api"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Collectors",
+      "description": "Get information about active RIS collectors"
+    },
+    {
+      "name": "Resources",
+      "description": "Get information about BGP routes"
+    }
+  ],
+  "paths": {
+    "/collectors": {
+      "get": {
+        "tags": ["Collectors"],
+        "summary": "Get all active RIS collectors",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Collector"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/collectors/{id}": {
+      "get": {
+        "tags": ["Collectors"],
+        "summary": "Get information about a collector",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the collector",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectorWithRouters"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/resources/{resources}": {
+      "get": {
+        "tags": ["Resources"],
+        "summary": "Get BGP routes state for a set of resources",
+        "parameters": [
+          {
+            "name": "resources",
+            "in": "path",
+            "description": "Resources to search, separated by comma without spaces",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "timestamp",
+            "in": "query",
+            "description": "The time for when the query should be performed",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "collectors",
+            "in": "query",
+            "description": "List of collectors used to query, separated by comma without spaces",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Resource"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Collector": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "location": {
+            "type": "object",
+            "properties": {
+              "geographical": {
+                "type": "string"
+              },
+              "topological": {
+                "type": "string"
+              },
+              "countryCode": {
+                "type": "string"
+              },
+              "latitude": {
+                "type": "number"
+              },
+              "longitude": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      },
+      "CollectorWithRouters": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Collector"
+          }
+        ]
+      },
+      "Route": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "collector": {
+            "type": "integer"
+          },
+          "peer": {
+            "type": "integer"
+          },
+          "path": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          }
+        }
+      },
+      "Resource": {
+        "type": "object",
+        "properties": {
+          "resources": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "routes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Route"
+            }
+          },
+          "prepends": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Route"
+            }
+          },
+          "timestamp": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  }
+}
