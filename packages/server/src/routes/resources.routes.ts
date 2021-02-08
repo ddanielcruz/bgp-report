@@ -5,6 +5,6 @@ import ResourcesController from '../controllers/ResourcesController'
 const routes = Router()
 const controller = new ResourcesController()
 
-routes.get('/:resources', controller.show)
+routes.get('/', controller.show)
 
 export default routes

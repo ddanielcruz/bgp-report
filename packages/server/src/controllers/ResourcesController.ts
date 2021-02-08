@@ -4,12 +4,15 @@ import FindResourceInformationService from '@services/FindResourceInformationSer
 
 export default class ResourcesController {
   async show(request: Request, response: Response): Promise<Response> {
-    const { params, query } = request
+    const { query } = request
+    if (!query.resources) {
+      return response.status(400).json({
+        error: 'Resources not provided.'
+      })
+    }
+
     const service = new FindResourceInformationService()
-    const resources = await service.execute({
-      resources: params.resources,
-      ...query
-    })
+    const resources = await service.execute(query)
 
     return response.json(resources)
   }
