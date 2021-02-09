@@ -17,6 +17,9 @@
   "servers": [
     {
       "url": "https://bgp-report.herokuapp.com/api"
+    },
+    {
+      "url": "http://localhost:3333/api"
     }
   ],
   "tags": [
@@ -81,14 +84,14 @@
         }
       }
     },
-    "/resources/{resources}": {
+    "/resources": {
       "get": {
         "tags": ["Resources"],
         "summary": "Get BGP routes state for a set of resources",
         "parameters": [
           {
             "name": "resources",
-            "in": "path",
+            "in": "query",
             "description": "Resources to search, separated by comma without spaces",
             "required": true,
             "schema": {
