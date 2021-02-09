@@ -12,11 +12,12 @@ export const render = (bgpState: BGPState, timestamp: Date): Resource => {
 
   bgp_state.forEach(rawRoute => {
     const [collector, source] = rawRoute.source_id.split('-')
-    const route = {
+    const route: Route = {
       source: source,
       collector: parseInt(collector),
       peer: rawRoute.path[0],
-      path: rawRoute.path
+      path: rawRoute.path,
+      community: rawRoute.community
     }
 
     routes.push(route)

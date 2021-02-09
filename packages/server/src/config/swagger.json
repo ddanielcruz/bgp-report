@@ -187,6 +187,12 @@
             "items": {
               "type": "integer"
             }
+          },
+          "community": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       },

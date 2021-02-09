@@ -24,6 +24,7 @@ export interface Route {
   collector: number
   peer: number
   path: number[]
+  community: string[]
 }
 
 export interface Resource {
