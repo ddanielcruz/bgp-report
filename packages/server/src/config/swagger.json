@@ -113,6 +113,14 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "communities",
+            "in": "query",
+            "description": "List of communities used to filter received routes, separated by comma without spaces",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
