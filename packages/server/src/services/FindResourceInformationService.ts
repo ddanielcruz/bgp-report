@@ -6,6 +6,7 @@ interface Params {
   resources?: string
   collectors?: string
   timestamp?: string
+  communities?: string
 }
 
 export interface BGPState {
@@ -40,7 +41,17 @@ export default class FindResourceInformationService {
     const timestamp = new Date()
     const bgpState = await this.findResourceState(params)
 
-    // 2.0 Parse BGP state into information
+    // 2.0 Filter by communities in case received any
+    const { communities = '' } = params
+    if (communities) {
+      const separatedComm = communities.split(',').map(value => value.trim())
+
+      bgpState.bgp_state = bgpState.bgp_state.filter(route => {
+        return route.community.some(comm => separatedComm.includes(comm))
+      })
+    }
+
+    // 3.0 Parse BGP state into information
     return views.render(bgpState, timestamp)
   }
 
