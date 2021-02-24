@@ -11,7 +11,9 @@
     "experimentalDecorators": true,
     "baseUrl": "src",
     "paths": {
-      "@database/*": ["database/*"]
+      "@config/*": ["config/*"],
+      "@database/*": ["database/*"],
+      "@services/*": ["services/*"]
     }
   },
   "include": ["src/**/*"]

@@ -6,6 +6,7 @@ import helmet from 'helmet'
 import 'express-async-errors'
 
 import '@database/connection'
+import '@config/schedulers'
 import routes from './routes'
 import { errorHandler, logger } from './middleware'
 
