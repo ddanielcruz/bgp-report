@@ -1,5 +1,8 @@
 import { Router } from 'express'
 
-const routes = Router()
+import collectorsRouter from './collectors.routes'
 
-export default routes
+const router = Router()
+router.use('/collectors', collectorsRouter)
+
+export default router
