@@ -4,5 +4,8 @@
   "main": "dist/server.js",
   "repository": "git@github.com:danielccunha/bgp-report.git",
   "author": "Daniel Cunha <danielcunha54@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "git-commit-msg-linter": "^3.0.0"
+  }
 }
