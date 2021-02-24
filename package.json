@@ -14,11 +14,13 @@
     "express": "^4.17.1",
     "express-async-errors": "^3.1.1",
     "helmet": "^4.4.1",
+    "mongoose": "^5.11.18",
     "morgan": "^1.10.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.10",
     "@types/express": "^4.17.11",
+    "@types/mongoose": "^5.10.3",
     "@types/morgan": "^1.9.2",
     "@typescript-eslint/eslint-plugin": "^4.15.2",
     "@typescript-eslint/parser": "^4.15.2",
