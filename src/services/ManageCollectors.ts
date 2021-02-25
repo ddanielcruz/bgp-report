@@ -19,7 +19,7 @@ interface Location {
   country_code: string
 }
 
-export default class ManageCollectorsService {
+export class ManageCollectors {
   async execute() {
     // 1. Load collectors from database
     const collectors = await Collector.find()
