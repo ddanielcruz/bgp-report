@@ -4,7 +4,7 @@ import { Collector } from '@database/entities'
 
 import * as views from '../views/collectors.views'
 
-export default class CollectorsController {
+export class CollectorsController {
   async index(_request: Request, response: Response): Promise<Response> {
     const collectors = await Collector.find({}, { routers: 0 })
 

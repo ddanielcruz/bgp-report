@@ -1,13 +1,13 @@
-import { hasDuplicates } from './../helpers/hasDuplicates'
 import axios from 'axios'
 import Joi from '@hapi/joi'
 
+import { hasDuplicates } from '../helpers/hasDuplicates'
 import { AppError, PropertyError } from '../errors'
 
 interface Params {
-  resources?: string[]
-  collectors?: number[]
-  communities?: string[]
+  resources: string[]
+  collectors: number[]
+  communities: string[]
   timestamp?: number
 }
 

@@ -1,8 +1,10 @@
 import { Router } from 'express'
 
-import collectorsRouter from './collectors.routes'
+import collectorsRoutes from './collectors.routes'
+import routersRoutes from './resources.routes'
 
 const router = Router()
-router.use('/collectors', collectorsRouter)
+router.use('/collectors', collectorsRoutes)
+router.use('/resources', routersRoutes)
 
 export default router
