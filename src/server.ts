@@ -1,7 +1,5 @@
 import api from './api'
 
-import './services/FindResourcesState'
-
 const port = process.env.PORT || 3000
 
 api.listen(port, () => {
