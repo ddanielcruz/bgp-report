@@ -1,6 +1,6 @@
 {
   "name": "bgp-report",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "dist/server.js",
   "repository": "git@github.com:danielccunha/bgp-report.git",
   "author": "Daniel Cunha <danielcunha54@gmail.com>",
