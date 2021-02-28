@@ -6,7 +6,12 @@
   "author": "Daniel Cunha <danielcunha54@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "build": "babel src --extensions \".js,.ts\" --out-dir dist --copy-files --no-copy-ignored",
+    "start": "node dist/server.js",
     "dev": "tsnd -r tsconfig-paths/register --inspect=0.0.0.0:9229 --quiet --respawn --transpile-only --ignore-watch node_modules --no-notify src/server.ts"
+  },
+  "engines": {
+    "node": "14.x"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
@@ -22,6 +27,11 @@
     "swagger-ui-express": "^4.1.6"
   },
   "devDependencies": {
+    "@babel/cli": "^7.13.0",
+    "@babel/core": "^7.13.8",
+    "@babel/plugin-proposal-decorators": "^7.13.5",
+    "@babel/preset-env": "^7.13.8",
+    "@babel/preset-typescript": "^7.13.0",
     "@types/cors": "^2.8.10",
     "@types/express": "^4.17.11",
     "@types/hapi__joi": "^17.1.6",
@@ -31,6 +41,7 @@
     "@types/swagger-ui-express": "^4.1.2",
     "@typescript-eslint/eslint-plugin": "^4.15.2",
     "@typescript-eslint/parser": "^4.15.2",
+    "babel-plugin-module-resolver": "^4.1.0",
     "eslint": "^7.18.0",
     "eslint-config-prettier": "^7.2.0",
     "eslint-config-standard": "^16.0.2",
