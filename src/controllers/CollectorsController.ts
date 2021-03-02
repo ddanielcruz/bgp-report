@@ -1,7 +1,6 @@
 import { Request, Response } from 'express'
 
-import { Collector } from '@database/entities'
-
+import { Collector } from '../database/entities'
 import * as views from '../views/collectors.views'
 
 export class CollectorsController {

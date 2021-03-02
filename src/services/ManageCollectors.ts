@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-import positionStackConfig from '@config/positionStack'
-import { Collector, ICollector, ILocation, IRouter } from '@database/entities'
+import positionStackConfig from '../config/positionStack'
+import { Collector, ICollector, ILocation, IRouter } from '../database/entities'
 
 interface RRC {
   id: number

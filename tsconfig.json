@@ -8,13 +8,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "baseUrl": "src",
-    "paths": {
-      "@config/*": ["config/*"],
-      "@database/*": ["database/*"],
-      "@services/*": ["services/*"]
-    }
+    "experimentalDecorators": true
   },
   "include": ["src/**/*"]
 }

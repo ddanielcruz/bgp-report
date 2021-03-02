@@ -6,11 +6,11 @@ import helmet from 'helmet'
 import swaggerUI from 'swagger-ui-express'
 import 'express-async-errors'
 
-import '@database/connection'
-import '@config/schedulers'
-import swaggerConfig from '@config/swagger.json'
-import routes from './routes'
+import './database/connection'
+import './config/schedulers'
+import swaggerConfig from './config/swagger.json'
 import { errorHandler, logger } from './middleware'
+import { routes } from './routes'
 
 const app = express()
 app.use(helmet())

@@ -1,4 +1,4 @@
-import { ICollector } from '@database/entities'
+import { ICollector } from '../database/entities'
 
 export const render = (collector: ICollector) => {
   return {

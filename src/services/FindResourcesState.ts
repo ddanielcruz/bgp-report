@@ -1,8 +1,9 @@
 import axios from 'axios'
+
 import Joi from '@hapi/joi'
 
-import { hasDuplicates } from '../helpers/hasDuplicates'
 import { AppError, PropertyError } from '../errors'
+import { hasDuplicates } from '../helpers/hasDuplicates'
 
 interface Params {
   resources: string[]
