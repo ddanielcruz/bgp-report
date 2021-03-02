@@ -8,7 +8,8 @@
   "scripts": {
     "build": "babel src --extensions \".js,.ts\" --out-dir dist --copy-files --no-copy-ignored",
     "start": "node dist/server.js",
-    "dev": "tsnd --inspect=0.0.0.0:9229 --quiet --respawn --transpile-only --ignore-watch node_modules --no-notify src/server.ts"
+    "dev": "tsnd --inspect=0.0.0.0:9229 --quiet --respawn --transpile-only --ignore-watch node_modules --no-notify src/server.ts",
+    "postinstall": "husky install"
   },
   "engines": {
     "node": "14.x"
@@ -56,5 +57,10 @@
     "prettier": "^2.2.1",
     "ts-node-dev": "^1.1.2",
     "typescript": "^4.2.2"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "eslint 'src/**' --fix --no-error-on-unmatched-pattern"
+    ]
   }
 }
