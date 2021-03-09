@@ -27,13 +27,14 @@ export interface Route {
   collector: number
   peer: number
   path: number[]
+  prepend: boolean
   community: string[]
 }
 
 export interface ResourcesState {
   resources: string[]
   routes: Route[]
-  prepends: Route[]
+  prepends: number
   timestamp: number
 }
 
@@ -90,7 +91,7 @@ export class FindResourcesState {
 
   private parseRawState(rawState: RawResourcesState, timestamp: Date): ResourcesState {
     const routes: Route[] = []
-    const prepends: Route[] = []
+    let prepends = 0
     const { resource, bgp_state } = rawState
 
     bgp_state.forEach(rawRoute => {
@@ -100,12 +101,13 @@ export class FindResourcesState {
         collector: parseInt(collector),
         peer: rawRoute.path[0],
         path: rawRoute.path,
-        community: rawRoute.community
+        community: rawRoute.community,
+        prepend: hasDuplicates(rawRoute.path)
       }
 
       routes.push(route)
-      if (hasDuplicates(route.path)) {
-        prepends.push(route)
+      if (route.prepend) {
+        prepends++
       }
     })
 

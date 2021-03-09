@@ -219,6 +219,9 @@
             "items": {
               "type": "string"
             }
+          },
+          "prepend": {
+            "type": "boolean"
           }
         }
       },
@@ -238,10 +241,7 @@
             }
           },
           "prepends": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Route"
-            }
+            "type": "integer"
           },
           "timestamp": {
             "type": "integer"
