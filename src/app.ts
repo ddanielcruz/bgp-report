@@ -15,17 +15,35 @@ import swaggerConfig from './config/swagger.json'
 import { errorHandler, logger } from './middleware'
 import { routes } from './routes'
 
-const app = express()
-app.use(helmet())
-app.use(cors())
-app.use(logger())
-app.use(express.json())
-app.use('/api', routes)
-app.use('/', swaggerUI.serve, swaggerUI.setup(swaggerConfig))
-app.use(errorHandler)
+class App {
+  private express: express.Application
+  public server: http.Server
 
-const server = http.createServer(app)
-const io = new Server(server)
-sockets.configure(io)
+  constructor() {
+    this.express = express()
+    this.middleware()
+    this.routes()
+    this.sockets()
+  }
 
-export default server
+  private middleware() {
+    this.express.use(helmet())
+    this.express.use(cors())
+    this.express.use(logger())
+    this.express.use(express.json())
+  }
+
+  private routes() {
+    this.express.use('/api', routes)
+    this.express.use('/', swaggerUI.serve, swaggerUI.setup(swaggerConfig))
+    this.express.use(errorHandler)
+  }
+
+  private sockets() {
+    this.server = http.createServer(this.express)
+    const io = new Server(this.server)
+    sockets.configure(io)
+  }
+}
+
+export default new App().server
