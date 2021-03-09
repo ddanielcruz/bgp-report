@@ -8,7 +8,7 @@ import { hasDuplicates } from '../helpers/hasDuplicates'
 interface Params {
   resources: string[]
   collectors: number[]
-  communities: string[]
+  communities?: string[]
   timestamp?: number
 }
 
