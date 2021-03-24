@@ -1,7 +1,9 @@
 import axios from 'axios'
+import dayjs from 'dayjs'
 
+import { ResourcesState, IResourcesState, IResourcesRoute } from '@core/database/entities'
 import { AppError, PropertyError } from '@core/errors'
-import { hasDuplicates } from '@core/helpers/hasDuplicates'
+import { hasDuplicates } from '@core/helpers'
 import Joi from '@hapi/joi'
 
 interface Params {
@@ -13,28 +15,13 @@ interface Params {
 
 interface RawResourcesState {
   resource: string | string[]
+  query_time: string
   bgp_state: {
     target_prefix: string
     source_id: string
     path: number[]
     community: string[]
   }[]
-}
-
-export interface Route {
-  source: string
-  collector: number
-  peer: number
-  path: number[]
-  prepend: boolean
-  community: string[]
-}
-
-export interface ResourcesState {
-  resources: string[]
-  routes: Route[]
-  prepends: number
-  timestamp: number
 }
 
 const validator = Joi.object<Params>().keys({
@@ -45,7 +32,7 @@ const validator = Joi.object<Params>().keys({
 })
 
 export class FindResourcesState {
-  async execute(params: Params): Promise<ResourcesState> {
+  async execute(params: Params): Promise<Partial<IResourcesState>> {
     // 1.0 Validate received parameters using Joi (also normalize values)
     const normalizedParams = this.validate(params)
 
@@ -53,16 +40,25 @@ export class FindResourcesState {
     const timestamp = new Date()
     const currentState = await this.fetchResourcesState(normalizedParams)
 
-    // 3.0 Filter results by communities in case received any
-    const { communities } = normalizedParams
+    // 3.0 Parse resources state and upsert it in the database if user didn't pass a timestamp
+    let resourcesState = this.parseRawState(currentState, timestamp)
+    if (!params.timestamp) {
+      resourcesState = await ResourcesState.findOneAndUpdate(
+        { resources: resourcesState.resources, collectors: params.collectors },
+        { $set: { ...resourcesState, collectors: params.collectors } },
+        { upsert: true, new: true }
+      )
+    }
+
+    // 4.0 After storing it in the database, filter the communities in case received any
+    const { communities } = params
     if (communities.length) {
-      currentState.bgp_state = currentState.bgp_state.filter(route => {
+      resourcesState.routes = resourcesState.routes.filter(route => {
         return route.community.some(comm => communities.includes(comm))
       })
     }
 
-    // 4.0 Return resource state without parsing (it may be used later)
-    return this.parseRawState(currentState, timestamp)
+    return resourcesState
   }
 
   private validate(params: Params): Params {
@@ -80,7 +76,7 @@ export class FindResourcesState {
     const response = await axios.get('https://stat.ripe.net/data//bgp-state/data.json', {
       params: {
         resource: params.resources.join(','),
-        rrcs: params.collectors.length ? params.collectors.join(',') : undefined,
+        rrcs: params.collectors.length ? params.collectors.join(',') : undefined, //
         timestamp: params.timestamp
       }
     })
@@ -88,14 +84,14 @@ export class FindResourcesState {
     return response.data.data
   }
 
-  private parseRawState(rawState: RawResourcesState, timestamp: Date): ResourcesState {
-    const routes: Route[] = []
+  private parseRawState(rawState: RawResourcesState, timestamp: Date): Partial<IResourcesState> {
+    const routes: IResourcesRoute[] = []
     let prepends = 0
     const { resource, bgp_state } = rawState
 
     bgp_state.forEach(rawRoute => {
       const [collector, source] = rawRoute.source_id.split('-')
-      const route: Route = {
+      const route: IResourcesRoute = {
         source: source,
         collector: parseInt(collector),
         peer: rawRoute.path[0],
@@ -114,7 +110,17 @@ export class FindResourcesState {
       resources: typeof resource === 'string' ? [resource] : resource,
       routes,
       prepends,
-      timestamp: timestamp.getTime()
+      timestamp: timestamp.getTime(),
+      queriedAt: this.parseQueryTime(rawState.query_time)
+    }
+  }
+
+  private parseQueryTime(queryTime: string): number {
+    try {
+      const parsedDate = dayjs(queryTime).toDate()
+      return parsedDate.getTime()
+    } catch (error) {
+      return Date.now()
     }
   }
 }
