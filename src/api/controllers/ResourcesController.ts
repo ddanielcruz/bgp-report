@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 
-import { FindResourcesState } from '../services/FindResourcesState'
+import { FindResourcesState } from '@core/services/FindResourcesState'
 
 const parseParameters = ({ query }: Request) => {
   const splitByComma = (name: string) => {

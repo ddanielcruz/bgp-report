@@ -1,6 +1,6 @@
 import cron from 'node-cron'
 
-import { ManageCollectors } from '../services/ManageCollectors'
+import { ManageCollectors } from '@core/services/ManageCollectors'
 
 const manageCollectors = new ManageCollectors()
 manageCollectors.execute()

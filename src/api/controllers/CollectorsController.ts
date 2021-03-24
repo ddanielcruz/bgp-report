@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 
-import { Collector } from '../database/entities'
-import * as views from '../views/collectors.views'
+import * as views from '@api/views/collectors.views'
+import { Collector } from '@core/database/entities'
 
 export class CollectorsController {
   async index(_request: Request, response: Response): Promise<Response> {

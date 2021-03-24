@@ -1,6 +1,6 @@
 import { Router } from 'express'
 
-import { ResourcesController } from '../controllers/ResourcesController'
+import { ResourcesController } from '@api/controllers/ResourcesController'
 
 const routes = Router()
 const controller = new ResourcesController()

@@ -1,6 +1,6 @@
 import { Router } from 'express'
 
-import { CollectorsController } from '../controllers/CollectorsController'
+import { CollectorsController } from '@api/controllers/CollectorsController'
 
 const router = Router()
 const controller = new CollectorsController()
