@@ -27,15 +27,17 @@ const CollectorSchema = new Schema({
   location: {
     topological: {
       type: String,
-      required: true
+      trim: true
     },
     geographical: {
       type: String,
-      required: true
+      required: true,
+      trim: true
     },
     countryCode: {
       type: String,
-      required: true
+      required: true,
+      trim: true
     },
     latitude: {
       type: Number,
