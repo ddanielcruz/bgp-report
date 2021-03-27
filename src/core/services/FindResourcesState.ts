@@ -1,10 +1,13 @@
 import axios from 'axios'
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
 
 import { ResourcesState, IResourcesState, IResourcesRoute } from '@core/database/entities'
 import { AppError, PropertyError } from '@core/errors'
 import { hasDuplicates } from '@core/helpers'
 import Joi from '@hapi/joi'
+
+dayjs.extend(utc)
 
 interface Params {
   resources: string[]
@@ -35,22 +38,38 @@ export class FindResourcesState {
   async execute(params: Params): Promise<Partial<IResourcesState>> {
     // 1.0 Validate received parameters using Joi (also normalize values)
     const normalizedParams = this.validate(params)
-
-    // 2.0 Find resources state using RIS API
     const timestamp = new Date()
-    const currentState = await this.fetchResourcesState(normalizedParams)
 
-    // 3.0 Parse resources state and upsert it in the database if user didn't pass a timestamp
-    let resourcesState = this.parseRawState(currentState, timestamp)
+    // 2.0 Verify if state already exists if not searching with timestamp
+    let resourcesState: IResourcesState
+    if (!normalizedParams.timestamp) {
+      // 2.1 Find state by resources and collectors newer than 8 hours
+      const timestamp = dayjs.utc().add(-8, 'hours').toDate().getTime()
+      resourcesState = await ResourcesState.findOne({
+        resources: normalizedParams.resources,
+        collectors: normalizedParams.collectors,
+        queriedAt: {
+          $gt: timestamp
+        }
+      })
+    }
+
+    // 3.0 If didn't find any resources state search for it using RIS API
+    if (!resourcesState) {
+      const rawState = await this.fetchResourcesState(normalizedParams)
+      resourcesState = this.parseRawState(rawState, normalizedParams, timestamp) as IResourcesState
+    }
+
+    // 4.0 Upsert resources state in the database if user didn't pass a timestamp
     if (!params.timestamp) {
       resourcesState = await ResourcesState.findOneAndUpdate(
         { resources: resourcesState.resources, collectors: params.collectors },
-        { $set: { ...resourcesState, collectors: params.collectors } },
+        { $set: resourcesState },
         { upsert: true, new: true }
       )
     }
 
-    // 4.0 After storing it in the database, filter the communities in case received any
+    // 5.0 After storing it in the database, filter the communities in case received any
     const { communities } = params
     if (communities.length) {
       resourcesState.routes = resourcesState.routes.filter(route => {
@@ -84,10 +103,14 @@ export class FindResourcesState {
     return response.data.data
   }
 
-  private parseRawState(rawState: RawResourcesState, timestamp: Date): Partial<IResourcesState> {
+  private parseRawState(
+    rawState: RawResourcesState,
+    params: Params,
+    timestamp: Date
+  ): Partial<IResourcesState> {
     const routes: IResourcesRoute[] = []
     let prepends = 0
-    const { resource, bgp_state } = rawState
+    const { bgp_state } = rawState
 
     bgp_state.forEach(rawRoute => {
       const [collector, source] = rawRoute.source_id.split('-')
@@ -107,7 +130,8 @@ export class FindResourcesState {
     })
 
     return {
-      resources: typeof resource === 'string' ? [resource] : resource,
+      resources: params.resources,
+      collectors: params.collectors,
       routes,
       prepends,
       timestamp: timestamp.getTime(),
@@ -117,8 +141,7 @@ export class FindResourcesState {
 
   private parseQueryTime(queryTime: string): number {
     try {
-      const parsedDate = dayjs(queryTime).toDate()
-      return parsedDate.getTime()
+      return dayjs.utc(queryTime).toDate().getTime()
     } catch (error) {
       return Date.now()
     }
