@@ -16,61 +16,74 @@ export interface IResourcesState extends Document {
   prepends: number
   timestamp: number
   queriedAt: number
+  live: boolean
+  createdAt?: Date
+  updatedAt?: Date
 }
 
-const ResourcesStateSchema = new Schema({
-  resources: {
-    type: [String],
-    required: true
-  },
-  collectors: {
-    type: [Number],
-    required: true
-  },
-  routes: {
-    type: [
-      {
-        source: {
-          type: String,
-          required: true
-        },
-        collector: {
-          type: Number,
-          required: true
-        },
-        peer: {
-          type: Number,
-          required: true
-        },
-        path: {
-          type: [Number],
-          required: true
-        },
-        prepend: {
-          type: Boolean,
-          required: true
-        },
-        community: {
-          type: [String],
-          required: true
+const ResourcesStateSchema = new Schema(
+  {
+    resources: {
+      type: [String],
+      required: true
+    },
+    collectors: {
+      type: [Number],
+      required: true
+    },
+    routes: {
+      type: [
+        {
+          source: {
+            type: String,
+            required: true
+          },
+          collector: {
+            type: Number,
+            required: true
+          },
+          peer: {
+            type: Number,
+            required: true
+          },
+          path: {
+            type: [Number],
+            required: true
+          },
+          prepend: {
+            type: Boolean,
+            required: true
+          },
+          community: {
+            type: [String],
+            required: true
+          }
         }
-      }
-    ],
-    required: true
+      ],
+      required: true
+    },
+    prepends: {
+      type: Number,
+      required: true
+    },
+    timestamp: {
+      type: Number,
+      required: true
+    },
+    queriedAt: {
+      type: Number,
+      required: true
+    },
+    live: {
+      type: Boolean,
+      required: true,
+      default: false
+    }
   },
-  prepends: {
-    type: Number,
-    required: true
-  },
-  timestamp: {
-    type: Number,
-    required: true
-  },
-  queriedAt: {
-    type: Number,
-    required: true
+  {
+    timestamps: true
   }
-})
+)
 
 export const ResourcesState = mongoose.model<IResourcesState>(
   'ResourcesState',
