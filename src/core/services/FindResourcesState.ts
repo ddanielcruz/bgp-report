@@ -58,18 +58,18 @@ export class FindResourcesState {
     if (!resourcesState) {
       const rawState = await this.fetchResourcesState(normalizedParams)
       resourcesState = this.parseRawState(rawState, normalizedParams, timestamp) as IResourcesState
+
+      // 3.1 Upsert resources state in the database if user didn't pass a timestamp
+      if (!params.timestamp) {
+        resourcesState = await ResourcesState.findOneAndUpdate(
+          { resources: resourcesState.resources, collectors: params.collectors },
+          { $set: resourcesState },
+          { upsert: true, new: true }
+        )
+      }
     }
 
-    // 4.0 Upsert resources state in the database if user didn't pass a timestamp
-    if (!params.timestamp) {
-      resourcesState = await ResourcesState.findOneAndUpdate(
-        { resources: resourcesState.resources, collectors: params.collectors },
-        { $set: resourcesState },
-        { upsert: true, new: true }
-      )
-    }
-
-    // 5.0 After storing it in the database, filter the communities in case received any
+    // 4.0 After storing it in the database, filter the communities in case received any
     const { communities } = params
     if (communities.length) {
       resourcesState.routes = resourcesState.routes.filter(route => {
