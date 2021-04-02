@@ -34,6 +34,7 @@ const ResourcesStateSchema = new Schema(
     routes: {
       type: [
         {
+          _id: false,
           source: {
             type: String,
             required: true

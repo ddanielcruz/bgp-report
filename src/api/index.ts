@@ -7,7 +7,7 @@ import swaggerUI from 'swagger-ui-express'
 import 'express-async-errors'
 
 import '@core/database/connection'
-import '@config/schedulers'
+import '@config/services'
 import swaggerConfig from '@config/swagger.json'
 
 import { errorHandler, logger } from './middleware'

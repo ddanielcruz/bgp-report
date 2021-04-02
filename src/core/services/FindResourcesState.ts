@@ -27,6 +27,7 @@ interface RawResourcesState {
   }[]
 }
 
+// TODO: Throw error if resource is not a valid prefix
 const validator = Joi.object<Params>().keys({
   resources: Joi.array().items(Joi.string().trim()).min(1).required(),
   collectors: Joi.array().items(Joi.number()).default([]),
