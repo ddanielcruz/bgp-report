@@ -109,8 +109,8 @@ export class MonitorResourcesState {
   // 7.0 [x] Create/Update the path in case of UPDATE (need to verify how)
   // 8.0 [ ] From ten to ten minutes verify if state is still newer than eight hours
   // 8.1 [ ] If it's not, close the websocket and set the live flag false
-  // 9.0 [ ] Store in the database every change involving the state
-  private onUpdateMessage(resource: string, { data }: WebSocketMessage) {
+  // 9.0 [x] Store in the database every change involving the state
+  private async onUpdateMessage(resource: string, { data }: WebSocketMessage) {
     // 1. Find states including the resource, also filtering by collector if any
     const collector = parseInt(data.host.replace('rrc', ''))
     const states = this.states.filter(({ resources, collectors }) => {
@@ -151,8 +151,19 @@ export class MonitorResourcesState {
         }
       }
 
-      // TODO: 3.4 Store updated state
-      // TODO: 3.5 Update state in the memory (states array)
+      // 3.4 Store updated state
+      const prepends = updatedState.routes.filter(route => route.prepend).length
+      await ResourcesState.findByIdAndUpdate(updatedState.id, {
+        $set: {
+          prepends,
+          routes: updatedState.routes
+        }
+      })
+
+      // 3.5 Update state in the memory (states array)
+      this.states = this.states.map(memoryState => {
+        return memoryState.id === updatedState.id ? updatedState : memoryState
+      })
     }
   }
 }
