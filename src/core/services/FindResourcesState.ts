@@ -81,7 +81,15 @@ export class FindResourcesState {
       }
     }
 
-    // 4.0 After storing it in the database, filter the communities in case received any
+    // 4. Add state to the monitor when live flag is true
+    if (!normalizedParams.timestamp && normalizedParams.live && !resourcesState.live) {
+      await this.monitor.addState(resourcesState)
+      if (!resourcesState.live) {
+        await ResourcesState.findByIdAndUpdate(resourcesState.id, { $set: { live: true } })
+      }
+    }
+
+    // 5.0 After storing it in the database, filter the communities in case received any
     const { communities } = params
     if (communities.length) {
       resourcesState.routes = resourcesState.routes.filter(route => {

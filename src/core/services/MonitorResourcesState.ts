@@ -192,7 +192,7 @@ export class MonitorResourcesState {
     }
   }
 
-  private async addState(rawState: IResourcesState) {
+  async addState(rawState: IResourcesState) {
     // 1. Verify if state is not already being monitored
     const existingState = this.states.find(state => state.id === rawState.id)
 

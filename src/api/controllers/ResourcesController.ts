@@ -16,7 +16,8 @@ const parseParameters = ({ query }: Request) => {
     resources: splitByComma('resources'),
     collectors: splitByComma('collectors'),
     communities: splitByComma('communities'),
-    timestamp: query?.timestamp?.toString()
+    timestamp: query?.timestamp?.toString(),
+    live: query?.live
   }
 }
 

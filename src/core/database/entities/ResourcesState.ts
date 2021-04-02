@@ -7,6 +7,7 @@ export interface IResourcesRoute {
   path: number[]
   prepend: boolean
   community: string[]
+  live?: boolean
 }
 
 export interface IResourcesState extends Document {

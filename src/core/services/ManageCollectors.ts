@@ -61,7 +61,6 @@ export class ManageCollectors {
       location = await this.findCollectorLocation(rrc)
 
       if (!location) {
-        console.log(location)
         return console.log(`Failed to get location from collector ${rrc.name}`)
       }
     }
