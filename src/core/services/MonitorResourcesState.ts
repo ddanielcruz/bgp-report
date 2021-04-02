@@ -17,7 +17,7 @@ interface SimplifiedResourcesState {
 }
 
 interface WebSocketsMap {
-  [key: string]: WebSocket
+  [key: string]: WebSocket | null
 }
 
 interface WebSocketMessage {
@@ -67,6 +67,10 @@ export class MonitorResourcesState {
     for (const resource of this.resources) {
       this.sockets[resource] = this.createWebSocket(resource)
     }
+
+    // 4. Setup scheduler to close websockets
+    const TEN_MINUTES = 600000
+    setInterval(this.closeExpiredStates, TEN_MINUTES)
   }
 
   private createWebSocket(resource: string): WebSocket {
@@ -100,16 +104,6 @@ export class MonitorResourcesState {
     return socket
   }
 
-  // 1.0 [x] Create a single instance of the service, return it if it was already created
-  // 2.0 [x] Load every resources state newer than eight hours with live flag set to true
-  // 3.0 [x] Create a websocket for each resource without collector filter
-  // 4.0 [x] After each UPDATE message find states to update
-  // 5.0 [x] Filter states by resource and collector if any
-  // 6.0 [x] Remove the path in case of WITHDRAW
-  // 7.0 [x] Create/Update the path in case of UPDATE (need to verify how)
-  // 8.0 [ ] From ten to ten minutes verify if state is still newer than eight hours
-  // 8.1 [ ] If it's not, close the websocket and set the live flag false
-  // 9.0 [x] Store in the database every change involving the state
   private async onUpdateMessage(resource: string, { data }: WebSocketMessage) {
     // 1. Find states including the resource, also filtering by collector if any
     const collector = parseInt(data.host.replace('rrc', ''))
@@ -164,6 +158,37 @@ export class MonitorResourcesState {
       this.states = this.states.map(memoryState => {
         return memoryState.id === updatedState.id ? updatedState : memoryState
       })
+    }
+  }
+
+  private closeExpiredStates = async () => {
+    // 1. Find states queried before eight hours ago
+    const minQueriedAt = dayjs.utc().add(-8, 'hours').toDate().getTime()
+    const expiredStates = this.states.filter(state => state.queriedAt <= minQueriedAt)
+
+    if (expiredStates.length) {
+      // 2. Remove expired states from state list
+      this.states = this.states.filter(state => state.queriedAt > minQueriedAt)
+
+      // 3. Map existing resources again
+      let resources = []
+      this.states.forEach(state => resources.push(...state.resources))
+      this.resources = removeDuplicates(resources)
+
+      // 4. Close resources from expired states when necessary
+      resources = []
+      expiredStates.forEach(state => resources.push(...state.resources))
+      for (const resource of removeDuplicates(resources)) {
+        if (!this.resources.includes(resource) && this.sockets[resource]) {
+          this.sockets[resource].close()
+          this.sockets[resource] = null
+        }
+      }
+
+      // 5. Update each of the expired states in the database
+      for (const state of expiredStates) {
+        await ResourcesState.findByIdAndUpdate(state.id, { $set: { live: false } })
+      }
     }
   }
 }
