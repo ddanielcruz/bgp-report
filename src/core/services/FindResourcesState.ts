@@ -1,11 +1,15 @@
 import axios from 'axios'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
+import isCidr from 'is-cidr'
+import isIp from 'is-ip'
 
 import { ResourcesState, IResourcesState, IResourcesRoute } from '@core/database/entities'
 import { AppError, PropertyError } from '@core/errors'
 import { hasDuplicates } from '@core/helpers'
 import Joi from '@hapi/joi'
+
+import { MonitorResourcesState } from './MonitorResourcesState'
 
 dayjs.extend(utc)
 
@@ -14,6 +18,7 @@ interface Params {
   collectors: number[]
   communities?: string[]
   timestamp?: number
+  live: boolean
 }
 
 interface RawResourcesState {
@@ -27,15 +32,21 @@ interface RawResourcesState {
   }[]
 }
 
-// TODO: Throw error if resource is not a valid prefix
 const validator = Joi.object<Params>().keys({
   resources: Joi.array().items(Joi.string().trim()).min(1).required(),
   collectors: Joi.array().items(Joi.number()).default([]),
   communities: Joi.array().items(Joi.string().trim()).default([]),
-  timestamp: Joi.number()
+  timestamp: Joi.number(),
+  live: Joi.boolean().default(false)
 })
 
 export class FindResourcesState {
+  private monitor: MonitorResourcesState
+
+  constructor() {
+    this.monitor = MonitorResourcesState.create()
+  }
+
   async execute(params: Params): Promise<Partial<IResourcesState>> {
     // 1.0 Validate received parameters using Joi (also normalize values)
     const normalizedParams = this.validate(params)
@@ -84,6 +95,15 @@ export class FindResourcesState {
   private validate(params: Params): Params {
     const { value, error } = validator.validate(params, { abortEarly: false })
     const errors = PropertyError.fromValidationError(error)
+
+    if (!PropertyError.includes(errors, 'resources')) {
+      for (let idx = 0; idx < value.resources.length; idx++) {
+        const resource: string = value.resources[idx]
+        if (!isIp(resource) && !isCidr(resource)) {
+          errors.push(new PropertyError(`resources[${idx}]`, 'Resource is not a valid prefix.'))
+        }
+      }
+    }
 
     if (errors.length) {
       throw new AppError('Received parameters are not valid.', { data: errors })

@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import WebSocket from 'ws'
 
-import { IResourcesRoute, ResourcesState } from '@core/database/entities'
+import { IResourcesRoute, IResourcesState, ResourcesState } from '@core/database/entities'
 import { hasDuplicates, removeDuplicates } from '@core/helpers'
 
 dayjs.extend(utc)
@@ -167,7 +167,7 @@ export class MonitorResourcesState {
     const expiredStates = this.states.filter(state => state.queriedAt <= minQueriedAt)
 
     if (expiredStates.length) {
-      // 2. Remove expired states from state list
+      // 2. Remove expired states from states array
       this.states = this.states.filter(state => state.queriedAt > minQueriedAt)
 
       // 3. Map existing resources again
@@ -188,6 +188,31 @@ export class MonitorResourcesState {
       // 5. Update each of the expired states in the database
       for (const state of expiredStates) {
         await ResourcesState.findByIdAndUpdate(state.id, { $set: { live: false } })
+      }
+    }
+  }
+
+  private async addState(rawState: IResourcesState) {
+    // 1. Verify if state is not already being monitored
+    const existingState = this.states.find(state => state.id === rawState.id)
+
+    if (!existingState) {
+      // 2. Add it to the states array
+      this.states.push({
+        id: rawState.id,
+        collectors: rawState.collectors,
+        peers: rawState.routes.map(route => route.peer),
+        queriedAt: rawState.queriedAt,
+        resources: rawState.resources,
+        routes: rawState.routes
+      })
+
+      // 3. Open a websocket for each resource not included in the websockets map
+      for (const resource of rawState.resources) {
+        if (!this.resources.includes(resource)) {
+          this.resources.push(resource)
+          this.sockets[resource] = this.createWebSocket(resource)
+        }
       }
     }
   }

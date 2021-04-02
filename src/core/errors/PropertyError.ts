@@ -19,4 +19,8 @@ export class PropertyError {
       return new PropertyError(property, err.message)
     })
   }
+
+  static includes(errors: PropertyError[], ...properties: string[]): boolean {
+    return errors.some(error => properties.includes(error.property))
+  }
 }
