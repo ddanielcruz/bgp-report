@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
+import isIp from 'is-ip'
 import WebSocket from 'ws'
 
 import { IResourcesRoute, IResourcesState, ResourcesState } from '@core/database/entities'
@@ -11,7 +12,7 @@ interface SimplifiedResourcesState {
   id: string
   resources: string[]
   collectors: number[]
-  peers: number[]
+  sources: string[]
   routes: IResourcesRoute[]
   queriedAt: number
 }
@@ -55,7 +56,7 @@ export class MonitorResourcesState {
       resources: state.resources,
       collectors: state.collectors,
       queriedAt: state.queriedAt,
-      peers: state.routes.map(route => route.peer),
+      sources: state.routes.map(route => route.source),
       routes: state.routes
     }))
 
@@ -111,41 +112,47 @@ export class MonitorResourcesState {
       return resources.includes(resource) && (!collectors.length || collectors.includes(collector))
     })
 
-    // 2. Parse received route into database format
+    // 2. Ignore update if source is not IPv4
+    const source = data.peer
+    if (!isIp.v4(source)) {
+      return
+    }
+
+    // 3. Parse received route into database format
     const peer = parseInt(data.peer_asn)
     const path = data.path?.filter(router => !Array.isArray(router))
     const route: IResourcesRoute = {
       collector,
       path,
       peer,
+      source,
       prepend: hasDuplicates(path),
-      community: data.community?.map(comm => `${comm[0]}:${comm[1]}`) ?? [],
-      source: data.peer
+      community: data.community?.map(comm => `${comm[0]}:${comm[1]}`) ?? []
     }
 
-    // 3. Loop through states updating their routing information
+    // 4. Loop through states updating their routing information
     for (const state of states) {
       const updatedState = { ...state }
 
-      // 3.1 If peer is not part of the state and it has a path, add it to the state
-      if (!state.peers.includes(peer) && path?.length) {
-        updatedState.peers.push(peer)
+      // 4.1 If source is not part of the state and it has a path, add it to the state
+      if (!state.sources.includes(source) && path?.length) {
+        updatedState.sources.push(source)
         updatedState.routes.push(route)
-      } else if (state.peers.includes(peer)) {
-        // 3.2 If peer is part of the state and it has a path, update existing route
+      } else if (state.sources.includes(source)) {
+        // 4.2 If source is part of the state and it has a path, update existing route
         if (path?.length) {
           updatedState.routes = state.routes.map(existingRoute => {
-            return existingRoute.peer === peer ? route : existingRoute
+            return existingRoute.source === source ? route : existingRoute
           })
         }
-        // 3.3 Otherwise, if peer is part of the state and it doesn't have a path (withdraw), remove the existing route
+        // 4.3 Otherwise, if source is part of the state and it doesn't have a path (withdraw), remove the existing route
         else {
-          updatedState.peers = updatedState.peers.filter(value => value !== peer)
-          updatedState.routes = updatedState.routes.filter(route => route.peer !== peer)
+          updatedState.sources = updatedState.sources.filter(value => value !== source)
+          updatedState.routes = updatedState.routes.filter(route => route.source !== source)
         }
       }
 
-      // 3.4 Store updated state
+      // 4.4 Store updated state
       const prepends = updatedState.routes.filter(route => route.prepend).length
       await ResourcesState.findByIdAndUpdate(updatedState.id, {
         $set: {
@@ -154,7 +161,7 @@ export class MonitorResourcesState {
         }
       })
 
-      // 3.5 Update state in the memory (states array)
+      // 4.5 Update state in the memory (states array)
       this.states = this.states.map(memoryState => {
         return memoryState.id === updatedState.id ? updatedState : memoryState
       })
@@ -201,7 +208,7 @@ export class MonitorResourcesState {
       this.states.push({
         id: rawState.id,
         collectors: rawState.collectors,
-        peers: rawState.routes.map(route => route.peer),
+        sources: rawState.routes.map(route => route.source),
         queriedAt: rawState.queriedAt,
         resources: rawState.resources,
         routes: rawState.routes
