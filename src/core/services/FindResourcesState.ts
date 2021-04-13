@@ -124,12 +124,20 @@ export class FindResourcesState {
     const response = await axios.get('https://stat.ripe.net/data//bgp-state/data.json', {
       params: {
         resource: params.resources.join(','),
-        rrcs: params.collectors.length ? params.collectors.join(',') : undefined, //
-        timestamp: params.timestamp
+        rrcs: params.collectors.length ? params.collectors.join(',') : undefined,
+        timestamp: this.parseTimestamp(params.timestamp)
       }
     })
 
     return response.data.data
+  }
+
+  private parseTimestamp(timestamp: number) {
+    if (timestamp) {
+      return dayjs(timestamp).format('YYYY-MM-DD[T]HH:mm')
+    }
+
+    return undefined
   }
 
   private parseRawState(
