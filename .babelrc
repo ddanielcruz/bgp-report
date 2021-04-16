@@ -15,9 +15,9 @@
       "module-resolver",
       {
         "alias": {
+          "@api": "./src/api",
           "@config": "./src/config",
-          "@database": "./src/database",
-          "@services": "./src/services"
+          "@core": "./src/core"
         }
       }
     ],

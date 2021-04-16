@@ -12,7 +12,7 @@ RUN yarn install --pure-lockfile --non-interactive
 RUN yarn build
 
 # App image
-FROM node:14-alpine
+FROM node:14-slim
 
 # Create app directory
 WORKDIR /usr/src/app
