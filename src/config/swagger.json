@@ -121,6 +121,14 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "live",
+            "in": "query",
+            "description": "Option to monitor resources in background before next update",
+            "schema": {
+              "type": "boolean"
+            }
           }
         ],
         "responses": {
