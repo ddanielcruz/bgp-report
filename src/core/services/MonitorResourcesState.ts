@@ -75,6 +75,7 @@ export class MonitorResourcesState {
   }
 
   private createWebSocket(resource: string): WebSocket {
+    console.log(` * Creating web socket for resource ${resource}`)
     const client = `${process.env.RIS_CLIENT}-${Date.now()}`
     const socket = new WebSocket(`wss://ris-live.ripe.net/v1/ws/?client=${client}`)
     const params = {
@@ -106,6 +107,8 @@ export class MonitorResourcesState {
   }
 
   private async onUpdateMessage(resource: string, { data }: WebSocketMessage) {
+    console.log(` * Received message for resource ${resource}`)
+
     // 1. Find states including the resource, also filtering by collector if any
     const collector = parseInt(data.host.replace('rrc', ''))
     const states = this.states.filter(({ resources, collectors }) => {
@@ -120,7 +123,7 @@ export class MonitorResourcesState {
 
     // 3. Parse received route into database format
     const peer = parseInt(data.peer_asn)
-    const path = data.path?.filter(router => !Array.isArray(router))
+    const path = data.path?.filter(router => !Array.isArray(router)) || []
     const route: IResourcesRoute = {
       collector,
       path,
@@ -136,17 +139,20 @@ export class MonitorResourcesState {
 
       // 4.1 If source is not part of the state and it has a path, add it to the state
       if (!state.sources.includes(source) && path?.length) {
+        console.log(` * Resource ${resource} has a new source ${source}`)
         updatedState.sources.push(source)
         updatedState.routes.push(route)
       } else if (state.sources.includes(source)) {
         // 4.2 If source is part of the state and it has a path, update existing route
         if (path?.length) {
+          console.log(` * Resource ${resource} updated path from source ${source}`)
           updatedState.routes = state.routes.map(existingRoute => {
             return existingRoute.source === source ? route : existingRoute
           })
         }
         // 4.3 Otherwise, if source is part of the state and it doesn't have a path (withdraw), remove the existing route
         else {
+          console.log(` * Resource ${resource} removed route from source ${source}`)
           updatedState.sources = updatedState.sources.filter(value => value !== source)
           updatedState.routes = updatedState.routes.filter(route => route.source !== source)
         }
