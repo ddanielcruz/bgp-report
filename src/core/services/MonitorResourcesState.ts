@@ -51,6 +51,7 @@ export class MonitorResourcesState {
     // 1. Load resources newer than eight hours with live flag set to true
     const minQueriedAt = dayjs.utc().add(-8, 'hours').toDate().getTime()
     const liveStates = await ResourcesState.find({ live: true, queriedAt: { $gt: minQueriedAt } })
+    console.log(` * Calculated minimum date: ${minQueriedAt}, found ${liveStates.length} state(s)`)
     this.states = liveStates.map(state => ({
       id: state._id,
       resources: state.resources,
@@ -112,7 +113,7 @@ export class MonitorResourcesState {
     // 1. Find states including the resource, also filtering by collector if any
     const collector = parseInt(data.host.replace('rrc', ''))
     const states = this.states.filter(({ resources, collectors }) => {
-      return resources.includes(resource) && (!collectors.length || collectors.includes(collector))
+      return resources.includes(resource) && (!collectors?.length || collectors.includes(collector))
     })
 
     // 2. Ignore update if source is not IPv4
@@ -159,7 +160,7 @@ export class MonitorResourcesState {
       }
 
       // 4.4 Store updated state
-      const prepends = updatedState.routes.filter(route => route.prepend).length
+      const prepends = updatedState.routes.filter(route => route.prepend)?.length || 0
       await ResourcesState.findByIdAndUpdate(updatedState.id, {
         $set: {
           prepends,
